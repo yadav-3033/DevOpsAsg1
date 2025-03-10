@@ -1,0 +1,19 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: yadav30333
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: devopsasg1
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: DevOpsAsg1
+
+provider:
+  name: aws
+  runtime: python3.12
+  region: ap-south-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
