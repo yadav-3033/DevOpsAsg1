@@ -9,11 +9,65 @@ provider:
   name: aws
   runtime: python3.12
   region: ap-south-1
+  environment:
+    DYNAMODB_TABLE: ${self:service}-table
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${aws:region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
 functions:
-  hello:
-    handler: handler.hello
+  createTodo:
+    handler: handler.create_todo
     events:
       - http:
-          path: hello
+          path: todos
+          method: post
+  getTodo:
+    handler: handler.get_todo
+    events:
+      - http:
+          path: todos/{id}
           method: get
+  updateTodo:
+    handler: handler.update_todo
+    events:
+      - http:
+          path: todos/{id}
+          method: put
+  deleteTodo:
+    handler: handler.delete_todo
+    events:
+      - http:
+          path: todos/{id}
+          method: delete
+
+resources:
+  Resources:
+    TodosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+# functions:
+#   hello:
+#     handler: handler.hello
+#     events:
+#       - http:
+#           path: hello
+#           method: get
