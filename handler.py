@@ -1,14 +1,3 @@
-# import json
-
-
-# def hello(event, context):
-#     body = {
-#         "message": "Hi, Abhinav Yadav this side."
-#     }
-
-#     return {"statusCode": 200, "body": json.dumps(body)}
-
-
 import json
 import boto3
 from uuid import uuid4
@@ -69,6 +58,7 @@ def delete_todo(event, context):
     todo_id = event['pathParameters']['id']
     table.delete_item(Key={'id': todo_id})
     response = {
-        'statusCode': 204
+        'statusCode': 200,
+        'body': json.dumps({'message': 'Item deleted successfully!'})
     }
     return response
